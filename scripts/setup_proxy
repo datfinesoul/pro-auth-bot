@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+if [[ -f ".env" ]]; then
+  echo ".env file already exits"
+  exit 1
+fi
+curl -i --silent --show-error --get 'https://smee.io/new' | \
+  awk '/^Location/ {print $2}' | \
+  xargs -I{} echo "WEBHOOK_PROXY_URL={}" > .env
+
+openssl rand -base64 32 | \
+  xargs -I{} echo "WEBHOOK_SECRET={}" >> .env
+
