@@ -126,7 +126,6 @@ default_permissions:
 
 
 # The name of the GitHub App. Defaults to the name specified in package.json
-name: Pro Auth Bot
 
 # The homepage of your GitHub App.
 url: https://github.com/datfinesoul/pro-auth-bot
@@ -137,3 +136,5 @@ description: Probot Learning App
 # Set to true when your GitHub App is available to the public or false when it is only accessible to the owner of the app.
 # Default: true
 public: false
+
+# NOTE: "name" will be set dynamically

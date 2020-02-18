@@ -6,6 +6,7 @@ npm run dev
 ```
 
 - hit http://localhost:3000 and perform setup
+- Edit "App Settings" afterward to make the app "active"
 - more coming...
 
 ### Quirks
@@ -14,6 +15,8 @@ npm run dev
   then prevents proper submission of that page.
   1.) Clear the passwords for Github OR
   1.) Clear the field prior to submitting
+- Same problem with the `secret`.  Before updating this page, please make sure none
+  of the fields have a colored background indicating auto change.
 
 - After installing a Github App, it still needs to be made active
 

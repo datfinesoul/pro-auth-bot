@@ -1,12 +1,36 @@
 #!/usr/bin/env bash
-if [[ -f ".env" ]]; then
-  echo ".env file already exits"
+
+# run from repo root dir
+
+if [[ -f ".env" || -f ".ngrok.yml" ]]; then
+  echo ".env and/or .ngrok.yml already exists"
   exit 1
 fi
-curl -i --silent --show-error --get 'https://smee.io/new' | \
-  awk '/^Location/ {print $2}' | \
-  xargs -I{} echo "WEBHOOK_PROXY_URL={}" > .env
 
-openssl rand -base64 32 | \
-  xargs -I{} echo "WEBHOOK_SECRET={}" >> .env
+SUBDOMAIN="$( \
+  openssl rand -base64 20 | \
+  tr -d "=+/" | \
+  cut -c1-16 \
+  )"
+SECRET="$(openssl rand -base64 32)"
+APP_NAME="Pro Auth Bot (${SUBDOMAIN})"
 
+tee .ngrok.yml << EOF
+tunnels:
+  probot:
+    proto: http
+    addr: localhost:3000
+    bind_tls: true
+    subdomain: ${SUBDOMAIN}
+EOF
+
+tee .env << EOF
+WEBHOOK_PROXY_URL=https://${SUBDOMAIN}.ngrok.io
+WEBHOOK_SECRET=${SECRET}
+EOF
+
+cp app.template.yml app.yml
+tee -a app.yml << EOF
+
+name: ${APP_NAME}
+EOF

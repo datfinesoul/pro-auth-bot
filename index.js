@@ -24,13 +24,19 @@ module.exports = app => {
   });
 
   server.get('/login', async (req, res) => {
+    const { CLIENT_ID, CLIENT_SECRET } = process.env;
+    if (!(CLIENT_ID && CLIENT_SECRET)) {
+      res.status(500).json({ status: "error", message: "invalid CLIENT_(ID/SECRET)" });
+      return
+    }
+
     // GitHub needs us to tell it where to redirect users after they've authenticated
     const protocol = req.headers['x-forwarded-proto'] || req.protocol
     const host = req.headers['x-forwarded-host'] || req.get('host')
 
     const params = querystring.stringify({
       client_id: process.env.CLIENT_ID,
-      redirect_uri: `https://smee.io/FHyERq3bkMhXzPB/login/cb`
+      redirect_uri: `${process.env.WEBHOOK_PROXY_URL}/login/cb`
     })
 
     const url = `https://github.com/login/oauth/authorize?${params}`

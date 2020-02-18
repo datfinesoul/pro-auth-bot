@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -o nounset; set -o errexit; set -o pipefail;
+
+# set color
+YELLOW=`tput setaf 3`
+RESET=`tput sgr0`
+
+NGROK_PID=
+
+function cleanup {
+  echo "Killing ngrok"
+  kill ${NGROK_PID} > /dev/null 2>&1 && true
+}
+
+trap cleanup EXIT
+
+if [[ $(node --version) != $(<.nvmrc) ]]; then
+  echo "##################################################################"
+  echo "#                                                                #"
+  echo "#     PLEASE INSTALL NODE $(<.nvmrc)                                #"
+  echo "#                                                                #"
+  echo "##################################################################"
+  exit 1
+fi
+
+which jq > /dev/null || (echo "need jq"; exit 1)
+which ngrok > /dev/null || (echo "need ngrok"; exit 1)
+
+# start the probot tunnel defined in .ngrok.yml in the background
+echo "[..] starting ngrok tunnel"
+ngrok start -config "${HOME}/.ngrok2/ngrok.yml" -config .ngrok.yml probot > /dev/null &
+NGROK_PID=$!
+sleep 2
+
+echo "[..] ngrok has been started on ${YELLOW}PID ${NGROK_PID}${RESET}"
+NGROK_URI="$(curl -sS http://localhost:4040/api/tunnels/probot | jq -r '.public_url')"
+
+echo "[..] Forwarding has been started on ${YELLOW}${NGROK_URI}${RESET}"
+echo "[..] ngrok console is ${YELLOW}http://localhost:4040/${RESET}"
+
+nodemon
