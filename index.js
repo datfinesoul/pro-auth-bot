@@ -1,6 +1,9 @@
 'use strict';
 module.exports = app => {
   const querystring = require('querystring');
+  const { post: httpPost } = require('axios');
+  const { Octokit } = require('@octokit/rest');
+  const { createTokenAuth } = require("@octokit/auth-token");
 
   app.log('app loaded');
   app.on('issues.opened', async ctx => {
@@ -36,15 +39,47 @@ module.exports = app => {
 
     const params = querystring.stringify({
       client_id: process.env.CLIENT_ID,
-      redirect_uri: `${process.env.WEBHOOK_PROXY_URL}/login/cb`
+      redirect_uri: `${process.env.PROXY_URL}/login/cb`
     })
 
     const url = `https://github.com/login/oauth/authorize?${params}`
     res.redirect(url)
   })
 
-  server.post('/login/cb', async (req, res) => {
-    app.log(req);
+  server.get('/login/cb', async (req, res) => {
+    /*
+     * TODO: for handling error with oauth
+     * error=redirect_uri_mismatch
+     * error_description=The+redirect_uri+MUST+match+the+registered+callback+URL+for+this+application.&error_uri=https%3A%2F%2Fdeveloper.github.com%2Fapps%2Fmanaging-oauth-apps%2Ftroubleshooting-authorization-request-errors%2F%23redirect-uri-mismatch
+     */
+    // code:
+
+    const { CLIENT_ID: client_id, CLIENT_SECRET: client_secret } = process.env;
+    const { code } = req.query;
+
+    // Exchange our "code" and credentials for a real token
+    // Use our app's OAuth credentials and the code that GitHub gave us
+    const tokenRes = await httpPost('https://github.com/login/oauth/access_token', {
+       client_id, client_secret, code
+    })
+
+    app.log('DATA', tokenRes.data);
+    // Authenticate our Octokit client with the new token
+    const { access_token: accessToken } = querystring.parse(tokenRes.data);
+    app.log('AUTH', { accessToken });
+
+    const auth = createTokenAuth(accessToken);
+    const authentication = await auth();
+
+    app.log('AUTHENTICATION', authentication);
+
+    const octokit = new Octokit({
+      auth:  accessToken,
+      authStrategy: createTokenAuth
+    });
+    const user = await octokit.users.getAuthenticated()
+    app.log(user.data) // <-- This is what we want!
+
     res.status(200).json({ status: 'ok' });
   });
 }

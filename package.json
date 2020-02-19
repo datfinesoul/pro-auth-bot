@@ -2,6 +2,9 @@
   "author": "Philip Hadviger <philip.hadviger@phad.me>",
   "bugs": "https://github.com/datfinesoul/pro-auth-bot/issues",
   "dependencies": {
+    "@octokit/auth-token": "^2.4.0",
+    "@octokit/rest": "^16.43.1",
+    "axios": "^0.19.2",
     "probot": "^9.9.4"
   },
   "description": "A Probot app",

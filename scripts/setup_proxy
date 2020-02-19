@@ -25,7 +25,8 @@ tunnels:
 EOF
 
 tee .env << EOF
-WEBHOOK_SECRET=${SECRET}
+PROXY_URL="https://${SUBDOMAIN}.ngrok.io"
+WEBHOOK_SECRET="${SECRET}"
 EOF
 
 cp app.template.yml app.yml
