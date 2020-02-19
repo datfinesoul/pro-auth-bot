@@ -80,6 +80,6 @@ module.exports = app => {
     const user = await octokit.users.getAuthenticated()
     app.log(user.data) // <-- This is what we want!
 
-    res.status(200).json({ status: 'ok' });
+    res.status(200).json(user.data);
   });
 }
