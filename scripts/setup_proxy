@@ -25,7 +25,6 @@ tunnels:
 EOF
 
 tee .env << EOF
-WEBHOOK_PROXY_URL=https://${SUBDOMAIN}.ngrok.io
 WEBHOOK_SECRET=${SECRET}
 EOF
 

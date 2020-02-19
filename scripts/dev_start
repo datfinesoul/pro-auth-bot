@@ -35,7 +35,11 @@ sleep 2
 echo "[..] ngrok has been started on ${YELLOW}PID ${NGROK_PID}${RESET}"
 NGROK_URI="$(curl -sS http://localhost:4040/api/tunnels/probot | jq -r '.public_url')"
 
-echo "[..] Forwarding has been started on ${YELLOW}${NGROK_URI}${RESET}"
 echo "[..] ngrok console is ${YELLOW}http://localhost:4040/${RESET}"
+echo ""
+echo "${YELLOW}################################################################################${RESET}"
+echo "-- IGNORE PROBOT'S MESSAGES. GO TO: ${YELLOW}${NGROK_URI}${RESET}"
+echo "${YELLOW}################################################################################${RESET}"
+echo ""
 
 nodemon

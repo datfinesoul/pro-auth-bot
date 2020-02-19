@@ -6,8 +6,7 @@
   },
   "description": "A Probot app",
   "devDependencies": {
-    "nodemon": "^2.0.2",
-    "smee-client": "^1.1.0"
+    "nodemon": "^2.0.2"
   },
   "homepage": "https://github.com/datfinesoul/pro-auth-bot",
   "license": "ISC",
@@ -21,7 +20,7 @@
   },
   "repository": "https://github.com/datfinesoul/pro-auth-bot.git",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "./scripts/dev_start",
     "start": "probot run ./index.js"
   },
   "version": "1.0.0"

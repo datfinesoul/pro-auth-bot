@@ -9,6 +9,10 @@ npm run dev
 - Edit "App Settings" afterward to make the app "active"
 - more coming...
 
+- NOTE: If you run npm dev dev before setup_proxy, a .env file will be
+  automatically created.  In that case, please delete that file and follow the steps
+  in order.
+
 ### Quirks
 - `User authorization callback URL` on the Github Apps setting page
   will default to the "Chrome Saved Passwords" login for github, which
