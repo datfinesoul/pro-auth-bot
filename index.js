@@ -52,8 +52,6 @@ module.exports = app => {
      * error=redirect_uri_mismatch
      * error_description=The+redirect_uri+MUST+match+the+registered+callback+URL+for+this+application.&error_uri=https%3A%2F%2Fdeveloper.github.com%2Fapps%2Fmanaging-oauth-apps%2Ftroubleshooting-authorization-request-errors%2F%23redirect-uri-mismatch
      */
-    // code:
-
     const { CLIENT_ID: client_id, CLIENT_SECRET: client_secret } = process.env;
     const { code } = req.query;
 
@@ -63,23 +61,22 @@ module.exports = app => {
        client_id, client_secret, code
     })
 
-    app.log('DATA', tokenRes.data);
     // Authenticate our Octokit client with the new token
+    // access_token, scope, bearer
     const { access_token: accessToken } = querystring.parse(tokenRes.data);
-    app.log('AUTH', { accessToken });
-
-    const auth = createTokenAuth(accessToken);
-    const authentication = await auth();
-
-    app.log('AUTHENTICATION', authentication);
 
     const octokit = new Octokit({
       auth:  accessToken,
       authStrategy: createTokenAuth
     });
-    const user = await octokit.users.getAuthenticated()
-    app.log(user.data) // <-- This is what we want!
+    const { data: user } = await octokit.users.getAuthenticated()
 
-    res.status(200).json(user.data);
+    const appKit = await app.auth();
+    const { data: repo } = await octokit.repos.get({
+      owner: 'datfinesoul',
+      repo: 'epiquery-mocklets'
+    });
+
+    res.status(200).json({ user, repo });
   });
 }
